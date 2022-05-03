@@ -43,23 +43,46 @@ public class Node {
             a.right.left.color.equals("red")) return true; // left child of only child is red (like parent)
         return false;
     }
-    public static Node balance(Node m) {
-        if (m.left != null) m.left = Node.balance(m.left); // fix it here ... 
+    public static boolean northViolation(Node a) {
+        if (a.color.equals("black") && a.left != null && // black node with left child
+                a.left.color.equals("red") && a.left.left != null && // left child red with left child
+                a.left.left.color.equals("red")) return true; // left child of only child is red (like parent)
+        return false;
+    }
+
+    public static boolean southViolation(Node a) {
+        if (a.color.equals("black") && a.right != null && // black node with right child
+                a.right.color.equals("red") && a.right.right != null && // right child red with right child
+                a.right.right.color.equals("red")) return true; // right child of only child is red (like parent)
+        return false;
+    }
+   public static Node balance(Node m) {
+        if (m.left != null) m.left = Node.balance(m.left); // fix it here ...
         if (m.right != null) m.right = Node.balance(m.right); // ... or here
         if (Node.westViolation(m)) {
-            System.out.println(m.num + " double red! (West)"); 
-            int X = m.left.num, Y = m.left.right.num, Z = m.num; 
+            System.out.println(m.num + " double red! (West)");
+            int X = m.left.num, Y = m.left.right.num, Z = m.num;
             Node a = m.left.left, b = m.left.right.left, c = m.left.right.right, d = m.right;
-            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red"); 
+            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red");
         } else if (Node.eastViolation(m)) {
-            System.out.println(m.num + " double red! (East)"); 
-            int X = m.num, Y = m.right.left.num, Z = m.right.num; 
+            System.out.println(m.num + " double red! (East)");
+            int X = m.num, Y = m.right.left.num, Z = m.right.num;
             Node a = m.left, b = m.right.left.left, c = m.right.left.right, d = m.right.right;
-            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red"); 
-        } else {
+            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red");
+        } else if (Node.northViolation(m)) {
+            int X = m.left.left.num, Y =  m.left.num, Z = m.num;
+            Node a = m.left.left.left, b = m.left.left.right, c = m.left.right, d = m.right;
+            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red");
+        } else if (Node.southViolation(m)) {
+            int X = m.num, Y =  m.right.num, Z = m.right.right.num;
+            Node a = m.left, b = m.right.left, c = m.right.right.left, d = m.right.right.right;
+            return new Node(Y, new Node(X, a, b), new Node(Z, c, d), "red");
+        }
+
+        else {
             System.out.println(m.num + " ... is good.");
         }
-        return m; 
+        return m;
     }
     public static Node insert(Node a, int num) {
         a.insert(num); 
